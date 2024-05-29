@@ -17,12 +17,15 @@ import java.util.Scanner;
 import java.io.IOException;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.InputMismatchException;
 
 class WrongStudentName extends Exception { }
 
 class WrongAge extends Exception { }
 
 class WrongDateBirth extends Exception { }
+
+class WrongMenuChoice extends Exception { }
 
 class Main {
     public static Scanner scan = new Scanner(System.in);
@@ -47,17 +50,27 @@ class Main {
             catch(WrongDateBirth e) {
                 System.out.println("Błędnie podana data urodzenia");
             }
+            catch(WrongMenuChoice e) {
+                System.out.println("Błędny wybór z menu!");
+                scan.nextLine();
+            }
         }
     }
-
-    public static int menu() {
+    public static int menu() throws WrongMenuChoice{
         System.out.println("Wciśnij:");
         System.out.println("1 - aby dodać studenta");
         System.out.println("2 - aby wypisać wszystkich studentów");
         System.out.println("3 - aby wyszukać studenta po imieniu");
         System.out.println("0 - aby wyjść z programu");
-        return scan.nextInt();
-    }
+        try {
+                int choice = scan.nextInt();
+                scan.nextLine();
+                return choice;
+            } catch(InputMismatchException e) {
+                throw new WrongMenuChoice();
+            }
+        }
+    
 
     public static String ReadName() throws WrongStudentName {
         scan.nextLine();
