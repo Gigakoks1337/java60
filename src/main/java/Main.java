@@ -15,10 +15,14 @@ Poniższe zadania będą się sprowadzały do modyfikacji bazowego kodu. Proces 
 import java.io.IOException;
 import java.util.Scanner;
 import java.io.IOException;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 class WrongStudentName extends Exception { }
 
 class WrongAge extends Exception { }
+
+class WrongDateBirth extends Exception { }
 
 class Main {
     public static Scanner scan = new Scanner(System.in);
@@ -38,7 +42,10 @@ class Main {
             } catch(WrongStudentName e) {
                 System.out.println("Błędne imie studenta!");
             }catch(WrongAge e) {
-                System.out.println("Błędny wiek studenta!");
+                System.out.println("Błędnie podany wiek");
+            }
+            catch(WrongDateBirth e) {
+                System.out.println("Błędnie podana data urodzenia");
             }
         }
     }
@@ -69,14 +76,31 @@ class Main {
         }
         return age;
     }
+    public static String ReadDateOfBirth() throws WrongDateBirth {
+        System.out.println("Podaj datę urodzenia w formacie DD-MM-YYYY: ");
+        String dateOfBirth = scan.nextLine();
+        if (!dateOfBirth.matches("\\d{2}-\\d{2}-\\d{4}")) {
+            throw new WrongDateBirth();
+        }
+        Pattern pattern = Pattern.compile("(\\d{2})-(\\d{2})-(\\d{4})");
+        Matcher matcher = pattern.matcher(dateOfBirth);
+        if (matcher.find()) {
+            int day = Integer.parseInt(matcher.group(1));
+            int month = Integer.parseInt(matcher.group(2));
+            int year = Integer.parseInt(matcher.group(3));
+            if (day < 1 || day > 31 || month < 1 || month > 12) {
+                throw new WrongDateBirth();
+            }
+        }
+        return dateOfBirth;
+    }
 
-    public static void exercise1() throws IOException, WrongStudentName, WrongAge {
+    public static void exercise1() throws IOException, WrongStudentName, WrongAge, WrongDateBirth {
         var name = ReadName();
         var age = ReadAge();
         scan.nextLine();
-        System.out.println("Podaj datę urodzenia DD-MM-YYY");
-        var date = scan.nextLine();
-        (new Service()).addStudent(new Student(name, age, date));
+        var dateOfBirth = ReadDateOfBirth();
+        (new Service()).addStudent(new Student(name, age, dateOfBirth));
     }
 
     public static void exercise2() throws IOException {
